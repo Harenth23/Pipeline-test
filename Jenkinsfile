@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/Harenth23/Pipeline-test.git'
+                git branch: 'main', url: 'https://github.com/Harenth23/Pipeline-test.git'
 
             }
         }
