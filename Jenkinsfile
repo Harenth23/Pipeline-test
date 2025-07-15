@@ -26,7 +26,7 @@ pipeline {
         stage('Lint') {
             steps {
                 sh '''
-                source $VENV/bin/activate
+                . .venv/bin/activate
                 flake8 app/
                 '''
             }
@@ -35,7 +35,7 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                source $VENV/bin/activate
+                . .venv/bin/activate
                 pytest
                 '''
             }
