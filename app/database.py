@@ -13,6 +13,6 @@ except ServerSelectionTimeoutError as e:
     print(f"Error: Could not connect to MongoDB at {MONGO_URI}")
     raise e
 
-# Return database instance (used in route handlers or dependency injection)
+
 def get_db():
     return db
