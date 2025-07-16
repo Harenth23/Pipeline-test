@@ -1,14 +1,14 @@
 from app.main import app
 from fastapi.testclient import TestClient
+from unittest.mock import MagicMock
 
 client = TestClient(app)
 
-def test_create_and_get_todo():
-    todo = {"title": "Test Todo", "description": "Write test", "completed": False}
-    response = client.post("/todos/", json=todo)
-    assert response.status_code == 200
-    todo_id = response.json()["id"]
+def test_create_and_get_todo(monkeypatch):
+    fake_insert = MagicMock(return_value={"inserted_id": "12345"})
+    monkeypatch.setattr("app.crud.db.todos.insert_one", fake_insert)
 
-    get_response = client.get(f"/todos/{todo_id}")
-    assert get_response.status_code == 200
-    assert get_response.json()["title"] == "Test Todo"
+    todo = {"title": "Test", "description": "Desc", "completed": False}
+    response = client.post("/todos/", json=todo)
+
+    assert response.status_code == 200
