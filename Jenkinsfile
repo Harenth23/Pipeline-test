@@ -3,7 +3,7 @@ peline {
 
     environment {
         VENV = '.venv'
-        MONGO_CONTAINER = 'jenkins-mongo'
+        MONGO_CONTAINER = 'mongo-test'
         MONGO_PORT = '27017'
         MONGO_URI = 'mongodb://localhost:27017'
         FASTAPI_CONTAINER = 'fastapi-todo-container'
@@ -31,7 +31,7 @@ peline {
                             echo "MongoDB is up!"
                             break
                         fi
-                        sleep 2
+                        sleep 3
                     done
                 '''
             }

@@ -8,7 +8,7 @@ app = FastAPI()
 
 @app.post("/todos/")
 async def add_todo(todo: Todo, db=Depends(get_db)):
-    todo_id = await create_todo(todo.dict(), db)
+    todo_id = await create_todo(todo.model_dump(), db)
     return {"id": todo_id}
 
 
