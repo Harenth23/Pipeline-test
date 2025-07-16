@@ -4,7 +4,7 @@ from app.main import app
 
 client = TestClient(app)
 
-@patch("app.crud.get_db")
+@patch("app.database.get_db")
 def test_create_and_get_todo(mock_get_db):
     # Setup mock database and collection
     mock_todos = MagicMock()
