@@ -1,8 +1,8 @@
 from bson import ObjectId
-from app.database import db
+from app.database import get_db
 
-
-async def create_todo(todo: dict) -> str:
+async def create_todo(todo):
+    db = get_db()
     result = await db.todos.insert_one(todo)
     return str(result.inserted_id)
 
