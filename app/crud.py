@@ -1,6 +1,7 @@
 from bson import ObjectId
 from app.database import get_db
 
+
 async def create_todo(todo):
     db = get_db()
     result = await db.todos.insert_one(todo)
@@ -8,6 +9,7 @@ async def create_todo(todo):
 
 
 async def get_todos():
+    db = get_db()
     todos = await db.todos.find().to_list(100)
     for todo in todos:
         todo["_id"] = str(todo["_id"])
@@ -15,6 +17,7 @@ async def get_todos():
 
 
 async def get_todo_by_id(id: str):
+    db = get_db()
     todo = await db.todos.find_one({"_id": ObjectId(id)})
     if todo:
         todo["_id"] = str(todo["_id"])
@@ -22,5 +25,6 @@ async def get_todo_by_id(id: str):
 
 
 async def delete_todo_by_id(id: str):
+    db = get_db()
     result = await db.todos.delete_one({"_id": ObjectId(id)})
     return result.deleted_count > 0
