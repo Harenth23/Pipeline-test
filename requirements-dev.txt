@@ -1,4 +1,4 @@
 pytest
 httpx
 flake8
-pip install mongomock
+mongomock
