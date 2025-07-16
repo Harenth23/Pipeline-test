@@ -3,13 +3,16 @@ pipeline {
 
     environment {
         VENV = '.venv'
+        MONGO_CONTAINER = 'jenkins-mongo'
+        MONGO_PORT = '27017'
+        MONGO_URI = 'mongodb://localhost:27017'
+        FASTAPI_CONTAINER = 'fastapi-todo-container'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/Harenth23/Pipeline-test.git'
-
             }
         }
 
@@ -42,22 +45,51 @@ pipeline {
             }
         }
 
+        stage('Start MongoDB') {
+            steps {
+                sh '''
+                docker rm -f $MONGO_CONTAINER || true
+                docker run -d --name $MONGO_CONTAINER -p $MONGO_PORT:27017 mongo:latest
+                echo "Waiting for MongoDB to start..."
+                sleep 10
+                '''
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t fastapi-todo-app .'
             }
         }
-        
+
         stage('Deploy') {
             steps {
-                sh 'docker run -d -p 8000:8000 fastapi-todo-app'
+                sh '''
+                docker rm -f $FASTAPI_CONTAINER || true
+                docker run -d --name $FASTAPI_CONTAINER \
+                    -e MONGO_URI=$MONGO_URI \
+                    -p 8000:8000 fastapi-todo-app
+                sleep 5
+                '''
             }
         }
-    }    
+
+        stage('Test API Endpoint') {
+            steps {
+                sh '''
+                curl --fail http://localhost:8000/todos/ || (echo "App is not responding" && exit 1)
+                '''
+            }
+        }
+    }
 
     post {
         always {
             echo 'Pipeline completed.'
+            sh '''
+            docker rm -f $MONGO_CONTAINER || true
+            docker rm -f $FASTAPI_CONTAINER || true
+            '''
         }
     }
 }
