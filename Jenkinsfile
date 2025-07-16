@@ -1,4 +1,4 @@
-pipeline {
+peline {
     agent any
 
     environment {
@@ -16,12 +16,34 @@ pipeline {
             }
         }
 
+        stage('Setup MongoDB') {
+            steps {
+                sh '''
+                    docker run -d \
+                      --name $MONGO_CONTAINER \
+                      -p $MONGO_PORT:27017 \
+                      -e MONGO_INITDB_DATABASE=todo_db \
+                      mongo:6
+
+                    echo "Waiting for MongoDB to be ready..."
+                    for i in {1..10}; do
+                        if docker exec $MONGO_CONTAINER mongo --eval "db.stats()" >/dev/null 2>&1; then
+                            echo "MongoDB is up!"
+                            break
+                        fi
+                        sleep 2
+                    done
+                '''
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
                 sh '''
-                python3 -m venv .venv
-                . .venv/bin/activate
-                pip install -r requirements.txt -r requirements-dev.txt
+                    python3 -m venv $VENV
+                    . $VENV/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt -r requirements-dev.txt
                 '''
             }
         }
@@ -29,8 +51,8 @@ pipeline {
         stage('Lint') {
             steps {
                 sh '''
-                . .venv/bin/activate
-                flake8 app/
+                    . $VENV/bin/activate
+                    flake8 app/
                 '''
             }
         }
@@ -38,24 +60,10 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                . .venv/bin/activate
-                export PYTHONPATH=$PWD
-                pytest
+                    . $VENV/bin/activate
+                    export PYTHONPATH=$PWD
+                    pytest
                 '''
-            }
-        }
-
-        stage('Setup MongoDB') {
-            steps {
-                sh '''
-                    docker run -d \
-                      --name mongo-test \
-                      -p 27017:27017 \
-                      -e MONGO_INITDB_DATABASE=todo_db \
-                      mongo:6
-                '''
-                // Wait a bit for MongoDB to initialize
-                sleep 10
             }
         }
 
@@ -68,11 +76,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                docker rm -f $FASTAPI_CONTAINER || true
-                docker run -d --name $FASTAPI_CONTAINER \
-                    -e MONGO_URI=$MONGO_URI \
-                    -p 8000:8000 fastapi-todo-app
-                sleep 5
+                    docker rm -f $FASTAPI_CONTAINER || true
+                    docker run -d --name $FASTAPI_CONTAINER \
+                        -e MONGO_URI=$MONGO_URI \
+                        -p 8000:8000 fastapi-todo-app
+
+                    echo "Waiting for FastAPI to be ready..."
+                    sleep 5
                 '''
             }
         }
@@ -80,7 +90,7 @@ pipeline {
         stage('Test API Endpoint') {
             steps {
                 sh '''
-                curl --fail http://localhost:8000/todos/ || (echo "App is not responding" && exit 1)
+                    curl --fail http://localhost:8000/todos/ || (echo "App is not responding" && exit 1)
                 '''
             }
         }
@@ -90,8 +100,8 @@ pipeline {
         always {
             echo 'Pipeline completed.'
             sh '''
-            docker rm -f $MONGO_CONTAINER || true
-            docker rm -f $FASTAPI_CONTAINER || true
+                docker rm -f $MONGO_CONTAINER || true
+                docker rm -f $FASTAPI_CONTAINER || true
             '''
         }
     }
