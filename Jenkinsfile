@@ -47,7 +47,13 @@ pipeline {
                 sh 'docker build -t fastapi-todo-app .'
             }
         }
-    }
+        
+        stage('Deploy') {
+            steps {
+                sh 'docker run -d -p 8000:8000 fastapi-todo-app'
+            }
+        }
+    }    
 
     post {
         always {
