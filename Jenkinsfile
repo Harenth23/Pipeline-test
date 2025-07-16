@@ -45,14 +45,17 @@ pipeline {
             }
         }
 
-        stage('Start MongoDB') {
+        stage('Setup MongoDB') {
             steps {
                 sh '''
-                docker rm -f $MONGO_CONTAINER || true
-                docker run -d --name $MONGO_CONTAINER -p $MONGO_PORT:27017 mongo:latest
-                echo "Waiting for MongoDB to start..."
-                sleep 10
+                    docker run -d \
+                      --name mongo-test \
+                      -p 27017:27017 \
+                      -e MONGO_INITDB_DATABASE=todo_db \
+                      mongo:6
                 '''
+                // Wait a bit for MongoDB to initialize
+                sleep 10
             }
         }
 
