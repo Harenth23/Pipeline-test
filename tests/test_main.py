@@ -1,6 +1,7 @@
 import pytest
 import pytest_asyncio
-import asyncio 
+import asyncio
+from bson import ObjectId
 from httpx import AsyncClient, ASGITransport
 from app.main import app
 from app.database import get_db
@@ -53,4 +54,5 @@ async def test_create_and_get_todo():
         assert matching["title"] == "Test Todo"
 
     # Optional: Cleanup the inserted test data
+    db = get_db()
     await db.todos.delete_one({"_id": todo_id})
