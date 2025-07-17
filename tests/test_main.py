@@ -1,8 +1,10 @@
 import pytest
+import pytest_asyncio
+import asyncio 
 from httpx import AsyncClient
 from app.main import app
 from app.database import get_db
-import asyncio
+from motor.motor_asyncio import AsyncIOMotorClient
 
 @pytest.fixture(scope="module")
 def event_loop():
