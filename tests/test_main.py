@@ -29,7 +29,7 @@ async def test_create_and_get_todo():
 
     transport = ASGITransport(app=app)
 
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    async with AsyncClient(transport=transport, base_url="http://test") as client:    
         # Create Todo
         response = await client.post("/todos/", json=todo)
         assert response.status_code == 200
