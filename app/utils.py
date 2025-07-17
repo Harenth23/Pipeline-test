@@ -1,5 +1,3 @@
-from bson import ObjectId
-
 
 def normalize_mongo_document(doc):
     """Convert _id to string id in MongoDB documents."""
