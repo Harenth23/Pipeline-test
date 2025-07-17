@@ -22,7 +22,7 @@ pipeline {
                 docker rm -f mongo-test || true
                 docker run -d \
                  --name mongo-test \
-                 -p 27017:27017 \
+                 -p 27018:27017 \
                  -e MONGO_INITDB_DATABASE=todo_db \
                  mongo:6
 
