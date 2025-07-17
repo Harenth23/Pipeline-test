@@ -4,15 +4,13 @@ from app.main import app
 from app.database import get_db
 import asyncio
 
-# ✅ Create a new event loop for pytest async tests
 @pytest.fixture(scope="module")
 def event_loop():
     loop = asyncio.new_event_loop()
     yield loop
     loop.close()
 
-# ✅ Cleanup the todos collection before and after each test
-@pytest.fixture(autouse=True)
+@pytest_asyncio.fixture(autouse=True)
 async def clear_todos():
     db = get_db()
     await db.todos.delete_many({})
@@ -26,6 +24,8 @@ async def test_create_and_get_todo():
         "description": "Write test",
         "completed": False
     }
+
+    transport = ASGITransport(app=app)
 
     async with AsyncClient(app=app, base_url="http://test") as client:
         # Create Todo
