@@ -91,6 +91,15 @@ pipeline {
             }
         }
 
+        stage('Show FastAPI Logs') {
+            steps {
+                sh '''
+                    echo "====== FastAPI Uvicorn Logs ======"
+                    docker logs $FASTAPI_CONTAINER || true
+                '''
+            }
+        }
+
         stage('Test API Endpoint') {
             steps {
                 sh '''
@@ -104,6 +113,8 @@ pipeline {
         always {
             echo 'Pipeline completed.'
             sh '''
+                echo "====== FastAPI Logs (Post Stage) ======"
+                docker logs $FASTAPI_CONTAINER || true
                 docker rm -f $MONGO_CONTAINER || true
                 docker rm -f $FASTAPI_CONTAINER || true
             '''
