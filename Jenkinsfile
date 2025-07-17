@@ -61,6 +61,12 @@ pipeline {
             }
         }
 
+        stage('Start MongoDB') {
+            steps {
+                sh 'docker run -d --name mongo-test -p 27017:27017 mongo:latest'
+            }
+        }
+
         stage('Test') {
             steps {
                 sh '''
