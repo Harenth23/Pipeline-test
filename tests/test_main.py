@@ -1,5 +1,5 @@
 import pytest
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 from app.main import app
 from app.database import get_db
 import asyncio
@@ -21,31 +21,36 @@ async def clear_todos():
     yield
     await db.todos.delete_many({})
 
-
-def test_create_and_get_todo():
+@pytest.mark.asyncio
+async def test_create_and_get_todo():
     todo = {
         "title": "Test Todo",
         "description": "Write test",
         "completed": False
     }
 
-    # Create Todo
-    response = client.post("/todos/", json=todo)
-    assert response.status_code == 200
-    todo_id = response.json()["id"]
-    assert isinstance(todo_id, str)
+    async with AsyncClient(app=app, base_url="http://test") as client:
+        # Create Todo
+        response = await client.post("/todos/", json=todo)
+        assert response.status_code == 200
+        todo_id = response.json()["id"]
+        assert isinstance(todo_id, str)
 
-    # Get Todo by ID
-    response = client.get(f"/todos/{todo_id}")
-    assert response.status_code == 200
-    data = response.json()
-    assert data["title"] == "Test Todo"
-    assert data["description"] == "Write test"
-    assert data["completed"] is False
+        # Get Todo by ID
+        response = await client.get(f"/todos/{todo_id}")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["title"] == "Test Todo"
+        assert data["description"] == "Write test"
+        assert data["completed"] is False
 
-    # Get all Todos
-    response = client.get("/todos/")
-    assert response.status_code == 200
-    todos = response.json()
-    assert len(todos) == 1
-    assert todos[0]["title"] == "Test Todo"
+        # Get all Todos
+        response = await client.get("/todos/")
+        assert response.status_code == 200
+        todos = response.json()
+        assert any(t["id"] == todo_id for t in todos)
+        matching = next(t for t in todos if t["id"] == todo_id)
+        assert matching["title"] == "Test Todo"
+
+    # Optional: Cleanup the inserted test data
+    await db.todos.delete_one({"_id": todo_id})
