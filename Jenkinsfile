@@ -5,7 +5,7 @@ pipeline {
         VENV = '.venv'
         MONGO_CONTAINER = 'mongo-test'
         MONGO_PORT = '27017'
-        MONGO_URI = 'mongodb://localhost:27017'
+        MONGO_URI = 'mongodb://mongo-test:27017'
         FASTAPI_CONTAINER = 'fastapi-todo-container'
     }
 
