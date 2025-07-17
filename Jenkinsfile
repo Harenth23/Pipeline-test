@@ -64,9 +64,16 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                    . $VENV/bin/activate
-                    export PYTHONPATH=$PWD
-                    pytest
+                    docker run --rm --name test-runner \
+                        --network container:$MONGO_CONTAINER \
+                        -v $PWD:/app \
+                        -w /app \
+                        python:3.12 bash -c "\
+                            python3 -m venv .venv && \
+                            . .venv/bin/activate && \
+                            pip install -r requirements.txt -r requirements-dev.txt && \
+                            export PYTHONPATH=/app && \
+                            pytest"
                 '''
             }
         }
