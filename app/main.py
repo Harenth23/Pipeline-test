@@ -12,7 +12,7 @@ async def add_todo(todo: Todo, db=Depends(get_db)):
     return {"id": todo_id}
 
 
-@app.get("/todo/")
+@app.get("/todos/")
 async def read_todos(db=Depends(get_db)):
     return await get_todos(db)
 
