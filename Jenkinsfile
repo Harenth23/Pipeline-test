@@ -21,22 +21,23 @@ pipeline {
             sh '''
                 docker rm -f mongo-test || true
                 docker run -d \
-                 --name mongo-test \
-                 -p 27017777777:27017 \
-                 -e MONGO_INITDB_DATABASE=todo_db \
-                 mongo:6
+                    --name mongo-test \
+                    -p 27017:27017 \
+                    -e MONGO_INITDB_DATABASE=todo_db \
+                    mongo:6
 
-               echo "Waiting for MongoDB to be ready..."
+                echo "Waiting for MongoDB to be ready on localhost:27017..."
 
-               for i in {1..10}; do
-                if docker exec mongo-test mongosh --eval "db.runCommand({ ping: 1 })" > /dev/null 2>&1; then
-                  echo "MongoDB is up!"
-                  break
-                 else
-                   echo "Mongo not ready yet... retrying in 3s"
-                   sleep 3
-                 fi
-               done
+                for i in {1..10}; do
+                    if nc -z localhost 27017; then
+                        echo "MongoDB is up!"
+                        break
+                    else
+                        echo "Mongo not ready yet... retrying in 3s"
+                        sleep 3
+                    fi
+                done
+
             '''
             }
         }
