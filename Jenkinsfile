@@ -5,7 +5,7 @@ pipeline {
         VENV = '.venv'
         MONGO_CONTAINER = 'mongo-test'
         MONGO_PORT = '27017'
-        MONGO_URI = 'mongodb://mongo-test:27017'
+        MONGO_URI = 'mongodb://localhost:27017'
         FASTAPI_CONTAINER = 'fastapi-todo-container'
     }
 
@@ -22,7 +22,7 @@ pipeline {
                 docker rm -f mongo-test || true
                 docker run -d \
                  --name mongo-test \
-                 -p 27018:27017 \
+                 -p 27017777777:27017 \
                  -e MONGO_INITDB_DATABASE=todo_db \
                  mongo:6
 
@@ -60,13 +60,7 @@ pipeline {
                 '''
             }
         }
-
-        stage('Start MongoDB') {
-            steps {
-                sh 'docker run -d --name mongo-test -p 27017:27017 mongo:latest'
-            }
-        }
-
+ 
         stage('Test') {
             steps {
                 sh '''
