@@ -1,4 +1,5 @@
 from bson import ObjectId
+from app.utils import normalize_mongo_document
 
 
 async def create_todo(todo: dict, db):
@@ -7,17 +8,18 @@ async def create_todo(todo: dict, db):
 
 
 async def get_todos(db):
-    todos = await db.todos.find().to_list(100)
-    for todo in todos:
-        todo["_id"] = str(todo["_id"])
+    todos = []
+    cursor = db.todos.find({})
+    async for doc in cursor:
+        todos.append(normalize_mongo_document(doc))
     return todos
 
 
 async def get_todo_by_id(id: str, db):
-    todo = await db.todos.find_one({"_id": ObjectId(id)})
-    if todo:
-        todo["_id"] = str(todo["_id"])
-    return todo
+    doc = await db.todos.find_one({"_id": ObjectId(id)})
+    if doc:
+        return normalize_mongo_document(doc)
+    return None
 
 
 async def delete_todo_by_id(id: str, db):

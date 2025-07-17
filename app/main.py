@@ -11,11 +11,9 @@ async def add_todo(todo: Todo, db=Depends(get_db)):
     todo_id = await create_todo(todo.model_dump(), db)
     return {"id": todo_id}
 
-
-@app.get("/todos/")
+@app.get("/todo/")
 async def read_todos(db=Depends(get_db)):
-    return await get_todos(db)
-
+    return await get_todos(db)    
 
 @app.get("/todos/{id}")
 async def read_todo(id: str, db=Depends(get_db)):
