@@ -4,18 +4,16 @@ from app.main import app
 from app.database import get_db
 import asyncio
 
-client = TestClient(app)
-
+# ✅ Create a new event loop for pytest async tests
 @pytest.fixture(scope="module")
 def event_loop():
-    # To avoid 'RuntimeError: This event loop is already running'
     loop = asyncio.new_event_loop()
     yield loop
     loop.close()
 
+# ✅ Cleanup the todos collection before and after each test
 @pytest.fixture(autouse=True)
 async def clear_todos():
-    """Cleanup MongoDB todos collection before each test."""
     db = get_db()
     await db.todos.delete_many({})
     yield
