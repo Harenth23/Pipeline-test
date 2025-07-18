@@ -65,19 +65,16 @@ pipeline {
         stage('Test') {
             steps {
                 sh '''
-                    docker run --rm \
-                        --network container:$MONGO_CONTAINER \
-                        -v $PWD:/app \
-                        -w /app \
-                        python:3.12 bash -c "\
-                            apt-get update && \
-                            apt-get install -y gcc libffi-dev && \
-                            python3 -m venv .venv && \
-                            . .venv/bin/activate && \
-                            pip install --upgrade pip && \
-                            pip install -r requirements.txt -r requirements-dev.txt && \
-                            export PYTHONPATH=/app && \
-                            pytest"
+                    docker run --rm --network container:$MONGO_CONTAINER \
+                    -v $PWD:/app -w /app python:3.12-bookworm bash -c "
+                        apt-get update &&
+                        apt-get install -y gcc libffi-dev &&
+                        python3 -m venv .venv &&
+                        . .venv/bin/activate &&
+                        pip install --upgrade pip &&
+                        pip install -r requirements.txt -r requirements-dev.txt &&
+                        export PYTHONPATH=/app &&
+                        pytest"
                 '''
             }
         }
