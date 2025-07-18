@@ -66,9 +66,10 @@ pipeline {
             steps {
                 sh '''
                     docker run --rm --network container:$MONGO_CONTAINER \
-                    -v $PWD:/app -w /app python:3.12-bookworm bash -c ' 
+                    -v $PWD:/app -w /app python:3.12-bookworm bash -c '
+                        set -e && 
                         apt-get update &&
-                        apt-get install -y gcc libffi-dev &&
+                        apt-get install -y gcc libffi-dev python3-venv curl &&
                         python3 -m venv .venv &&
                         . .venv/bin/activate &&
                         pip install --upgrade pip &&
