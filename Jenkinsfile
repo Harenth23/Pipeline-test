@@ -45,10 +45,10 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
+                    VENV=".venv"
                     python3 -m venv $VENV
-                    . $VENV/bin/activate
-                    pip install --upgrade pip --break-system-packages
-                    pip install --break-system-packages -r requirements.txt -r requirements-dev.txt
+                    $VENV/bin/pip install --upgrade pip --break-system-packages
+                    $VENV/bin/pip install --break-system-packages -r requirements.txt -r requirements-dev.txt
                 '''
             }
         }
