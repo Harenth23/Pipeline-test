@@ -46,7 +46,7 @@ pipeline {
             steps {
                 sh '''
                     VENV=".venv"
-                    python3 -m venv $VENV
+                    python3 -m venv --system-site-packages $VENV
                     $VENV/bin/pip install --upgrade pip --break-system-packages
                     $VENV/bin/pip install --break-system-packages -r requirements.txt -r requirements-dev.txt
                 '''
