@@ -85,6 +85,11 @@ pipeline {
                 sh '''
                     VENV=".venv"
                     python3 -m venv --system-site-packages $VENV
+                                         
+                    echo "Checking if .venv folder was created..."
+                    ls -l
+                    echo "Listing contents of .venv:"
+                    ls -l $VENV || echo ".venv not found"
                     
                     if [ ! -f "$VENV/bin/pip" ]; then
                         echo "pip not found, running ensurepip..."
