@@ -42,6 +42,44 @@ pipeline {
             }
         }
 
+
+    stage('Debug Environment') {
+        steps {
+            sh '''
+                echo "Python3 Path:"
+                which python3 || true
+
+                echo "Python3 Version:"
+                python3 --version || true
+
+                echo "Python3 Modules Directory:"
+                python3 -m site || true
+
+                echo "Checking ensurepip..."
+                python3 -m ensurepip --version || echo "ensurepip missing"
+
+                echo "PATH Environment:"
+                echo $PATH
+
+                echo "User:"
+                whoami
+            '''
+            }
+        }
+
+
+        stage('Test Venv Creation') {
+            steps {
+                sh '''
+                    echo "Creating venv and checking contents..."
+                    python3 -m venv testenv
+                    ls -l testenv/bin || echo "testenv/bin not found"
+                    ls -l testenv/bin/pip || echo "Pip not found"
+                    testenv/bin/python --version || echo "Python in venv not found"
+                '''
+            }
+       }
+
         stage('Install Dependencies') {
             steps {
                 sh '''
