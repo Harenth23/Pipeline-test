@@ -83,13 +83,11 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    set -e
                     VENV=".venv"
                     python3 -m venv --system-site-packages $VENV
-                    ls -l $VENV/bin
                     $VENV/bin/python -m ensurepip --upgrade
                     $VENV/bin/pip install --upgrade pip
-                    $VENV/bin/pip install --break-system-packages -r requirements.txt -r requirements-dev.txt
+                    $VENV/bin/pip install -r requirements.txt -r requirements-dev.txt
                 '''
             }
         }
