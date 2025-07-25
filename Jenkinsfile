@@ -85,10 +85,10 @@ pipeline {
                 sh '''
                     set -e
                     VENV=".venv"
-                    python3 -m venv $VENV
+                    python3 -m venv --system-site-packages $VENV
                     ls -l $VENV/bin
                     $VENV/bin/python -m ensurepip --upgrade
-                    $VENV/bin/pip install --upgrade pip --break-system-packages
+                    $VENV/bin/pip install --upgrade pip
                     $VENV/bin/pip install --break-system-packages -r requirements.txt -r requirements-dev.txt
                 '''
             }
