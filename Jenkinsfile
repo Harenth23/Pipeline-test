@@ -84,7 +84,7 @@ pipeline {
             steps {
                 sh '''
                      
-                    set -x  # Print each command before executing (debugging)
+                    set -ex  # Print each command before executing (debugging)
             
                     echo "Current directory:"
                     pwd
