@@ -85,6 +85,12 @@ pipeline {
                 sh '''
                     VENV=".venv"
                     python3 -m venv --system-site-packages $VENV
+                    
+                    if [ ! -f "$VENV/bin/pip" ]; then
+                        echo "pip not found, running ensurepip..."
+                        $VENV/bin/python -m ensurepip --upgrade
+                    fi
+                     
                     $VENV/bin/python -m ensurepip --upgrade
                     $VENV/bin/pip install --upgrade pip
                     $VENV/bin/pip install -r requirements.txt -r requirements-dev.txt
