@@ -83,22 +83,39 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
+                     
+                    set -x  # Print each command before executing (debugging)
+            
+                    echo "Current directory:"
+                    pwd
+
+                    echo "Listing files before creating venv:"
+                    ls -al 
+            
                     VENV=".venv"
                     python3 -m venv --system-site-packages $VENV
-                                         
-                    echo "Checking if .venv folder was created..."
-                    ls -l
-                    echo "Listing contents of .venv:"
-                    ls -l $VENV || echo ".venv not found"
                     
-                    if [ ! -f "$VENV/bin/pip" ]; then
-                        echo "pip not found, running ensurepip..."
-                        $VENV/bin/python -m ensurepip --upgrade
+                    echo "Listing files after creating venv:"
+                    ls -al
+
+                    echo "Checking .venv/bin:"
+                    ls -al $VENV/bin || echo "$VENV/bin not found"
+                                     
+                    if [ -f "$VENV/bin/pip" ]; then
+                        echo "pip found"
+                    else
+                        echo "pip NOT found - trying ensurepip"
+                        $VENV/bin/python -m ensurepip --upgrade || echo "ensurepip failed"
                     fi
-                     
-                    $VENV/bin/python -m ensurepip --upgrade
-                    $VENV/bin/pip install --upgrade pip
-                    $VENV/bin/pip install -r requirements.txt -r requirements-dev.txt
+
+                    echo "Installing requirements if pip exists..."
+                    if [ -f "$VENV/bin/pip" ]; then
+                        $VENV/bin/pip install --upgrade pip
+                        $VENV/bin/pip install -r requirements.txt -r requirements-dev.txt
+                    else
+                        echo "pip is missing after all attempts — exiting"
+                        exit 1
+                    fi            
                 '''
             }
         }
