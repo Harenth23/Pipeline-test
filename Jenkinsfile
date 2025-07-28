@@ -97,6 +97,7 @@ pipeline {
                     if [ -d "$VENV" ]; then
                     echo "Removing existing virtual environment..."
                     rm -rf "$VENV"
+                    find . -type l -name "$VENV" -exec rm -v {} \; || true
                     fi
 
                     # Create a fresh venv
@@ -115,7 +116,7 @@ pipeline {
                     fi
 
                     echo "Installing requirements if pip exists..."
-                    if [ -f "$VENV/bin/pip" ]; then
+                    if [ -x "$VENV/bin/pip" ]; then
                         "$VENV/bin/pip" install --upgrade pip
                         "$VENV/bin/pip" install -r requirements.txt -r requirements-dev.txt
                     else
