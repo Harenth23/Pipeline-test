@@ -120,8 +120,8 @@ pipeline {
 
                     echo "Installing requirements if pip exists..."
                     if [ -x "$VENV/bin/pip" ]; then
-                        "$VENV/bin/pip" install --upgrade pip
-                        "$VENV/bin/pip" install -r requirements.txt -r requirements-dev.txt
+                        "$VENV/bin/python" -m pip install --upgrade pip
+                        "$VENV/bin/python" -m pip install -r requirements.txt -r requirements-dev.txt
                     else
                     echo "pip is missing after all attempts — exiting"
                     exit 1
