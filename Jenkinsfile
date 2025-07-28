@@ -93,6 +93,9 @@ pipeline {
 
                     VENV=".venv"
 
+                    file "$VENV/bin/pip"
+                    ls -l "$VENV/bin/pip" 
+
                     # Clean previous venv if exists
                     if [ -d "$VENV" ]; then
                     echo "Removing existing virtual environment..."
